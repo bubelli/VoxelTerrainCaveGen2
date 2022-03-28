@@ -27,22 +27,49 @@ namespace Eldemarkki.VoxelTerrain.VoxelData
         /// </summary>
         public void Execute()
         {
-            for (int x = 0; x < OutputVoxelData.Width; x++)
-            {
-                for (int z = 0; z < OutputVoxelData.Depth; z++)
-                {
-                    int2 terrainPosition = new int2(x + WorldPositionOffset.x, z + WorldPositionOffset.z);
-                    float terrainNoise = OctaveNoise(terrainPosition.x, terrainPosition.y, ProceduralTerrainSettings.NoiseFrequency * 0.001f, ProceduralTerrainSettings.NoiseOctaveCount, ProceduralTerrainSettings.NoiseSeed) * ProceduralTerrainSettings.Amplitude;
+            float3 p1 = new float3(-64, 80, -16);
+            float3 p2 = new float3(-74, 80, -2);
+            Capsule capsule = new Capsule(p1, p2, 7f);
+            //int3 poco = new int3(-64,80,-16);
+            //int3 poct = new int3(-74, 80, -2 );
 
-                    for (int y = 0; y < OutputVoxelData.Height; y++)
-                    {
-                        int3 worldPosition = new int3(terrainPosition.x, y + WorldPositionOffset.y, terrainPosition.y);
+            for (int x = 0; x < OutputVoxelData.Width; x++) {
+                for (int z = 0; z < OutputVoxelData.Depth; z++) {
 
-                        float voxelData = (worldPosition.y - ProceduralTerrainSettings.HeightOffset - terrainNoise) * 0.5f;
-                        OutputVoxelData.SetVoxelData((byte)math.clamp(voxelData * 255, 0, 255), new int3(x, y, z));
+
+                    //float terrainNoise = OctaveNoise(terrainPosition.x,  terrainPosition.y, ProceduralTerrainSettings.NoiseFrequency * 0.001f, ProceduralTerrainSettings.NoiseOctaveCount, ProceduralTerrainSettings.NoiseSeed) * ProceduralTerrainSettings.Amplitude;
+
+
+                    //    int2 terrainPosition = new int2(x + WorldPositionOffset.x, z + WorldPositionOffset.z);
+                    for (int y = 0; y < OutputVoxelData.Height; y++) {
+                        float3 terP = new float3(x + WorldPositionOffset.x, y + WorldPositionOffset.y, z + WorldPositionOffset.z);
+
+                        //Debug.Log($"{altitude}, InRadius: {Boo}");
+
+                        //float voxelDdata =(nearEnoughToPoc1 && || nearEnoughToPoc2|| ((altitude < radius) && (altitude > -radius)))&& correctY   ? 0f : 1f;
+                        float voxelDdata = capsule.Contains(terP) ? 0f : 1f;
+                        OutputVoxelData.SetVoxelData((byte)math.clamp(voxelDdata * 255, 0, 255), new int3(x, y, z));
                     }
+
                 }
             }
+
+            //for (int x = 0; x < OutputVoxelData.Width; x++)
+            //{
+            //    for (int z = 0; z < OutputVoxelData.Depth; z++)
+            //    {
+            //        int2 terrainPosition = new int2(x + WorldPositionOffset.x, z + WorldPositionOffset.z);
+            //        float terrainNoise = OctaveNoise(terrainPosition.x, terrainPosition.y, ProceduralTerrainSettings.NoiseFrequency * 0.001f, ProceduralTerrainSettings.NoiseOctaveCount, ProceduralTerrainSettings.NoiseSeed) * ProceduralTerrainSettings.Amplitude;
+
+            //        for (int y = 0; y < OutputVoxelData.Height; y++)
+            //        {
+            //            int3 worldPosition = new int3(terrainPosition.x, y + WorldPositionOffset.y, terrainPosition.y);
+
+            //            float voxelData = (worldPosition.y - ProceduralTerrainSettings.HeightOffset - terrainNoise) * 0.5f;
+            //            OutputVoxelData.SetVoxelData((byte)math.clamp(voxelData * 255, 0, 255), new int3(x, y, z));
+            //        }
+            //    }
+            //}
         }
 
         /// <summary>
